@@ -2,7 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:painter/painter.dart';
+
+import 'painter/painter.dart';
 
 void main() => runApp(new MyApp());
 
@@ -73,8 +74,12 @@ class _ExamplePageState extends State<ExamplePage> {
             tooltip: 'Clear',
             onPressed: _controller.clear),
         new IconButton(
-            icon: new Icon(Icons.check),
-            onPressed: () => _show(_controller.finish(), context)),
+          icon: new Icon(Icons.check),
+          onPressed: () {
+            final painting = _controller.getPathHistoryJson();
+            _show(_controller.finish(), context);
+          },
+        )
       ];
     }
     return new Scaffold(
