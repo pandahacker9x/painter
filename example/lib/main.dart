@@ -25,6 +25,7 @@ class ExamplePage extends StatefulWidget {
 class _ExamplePageState extends State<ExamplePage> {
   bool _finished = false;
   PainterController _controller = _newController();
+  Map<String, dynamic>? painting;
 
   @override
   void initState() {
@@ -76,10 +77,17 @@ class _ExamplePageState extends State<ExamplePage> {
         new IconButton(
           icon: new Icon(Icons.check),
           onPressed: () {
-            final painting = _controller.getPathHistoryJson();
+            painting = _controller.getPathHistoryMap();
             _show(_controller.finish(), context);
           },
-        )
+        ),
+        if (painting != null)
+          new IconButton(
+            icon: new Icon(Icons.swap_horiz),
+            onPressed: () {
+              _controller.loadPathHistory(painting!);
+            },
+          )
       ];
     }
     return new Scaffold(

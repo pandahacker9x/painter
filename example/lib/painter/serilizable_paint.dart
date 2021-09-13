@@ -4,8 +4,8 @@ import 'package:example/painter/utils.dart';
 import 'package:flutter/painting.dart';
 
 /// Custom [Paint] with serilization and deserialization abilities
-/// Note: only support [Paint.strokeWith], [Paint.blendMode] and [Paint.color] actions
-/// style = [PaintingStyle.fill] by default
+/// Note: only support [Paint.strokeWith], [Paint.blendMode], [Paint.color] 
+/// and [Paint.style] properties
 class SerializablePaint extends Paint {
   SerializablePaint();
 
@@ -14,6 +14,7 @@ class SerializablePaint extends Paint {
       'strokeWidth': strokeWidth,
       'color': color.toString(),
       'blendMode': blendMode.toString(),
+      'style': style.toString()
     };
   }
 
@@ -24,6 +25,8 @@ class SerializablePaint extends Paint {
       ..strokeWidth = map['strokeWidth']
       ..color = Utils.stringToColor(map['color'])
       ..blendMode = BlendMode.values
-          .firstWhere((element) => element.toString() == map['blendMode']);
+          .firstWhere((element) => element.toString() == map['blendMode'])
+      ..style = PaintingStyle.values
+          .firstWhere((element) => element.toString() == map['style']);
   }
 }

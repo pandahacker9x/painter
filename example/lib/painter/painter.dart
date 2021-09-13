@@ -42,10 +42,15 @@ class _PainterState extends State<Painter> {
 
   @override
   Widget build(BuildContext context) {
-    Widget child = new CustomPaint(
-      willChange: true,
-      painter: new _PainterPainter(widget.painterController._pathHistory,
-          repaint: widget.painterController),
+    Widget child = AnimatedBuilder(
+      animation: widget.painterController,
+      builder: (BuildContext context, Widget? child) {
+        return new CustomPaint(
+          willChange: true,
+          painter: new _PainterPainter(widget.painterController._pathHistory,
+              repaint: widget.painterController),
+        );
+      },
     );
     child = new ClipRect(child: child);
     if (!_finished) {
@@ -101,7 +106,7 @@ class _PainterPainter extends CustomPainter {
 
 class PathHistory {
   List<MapEntry<SerializablePath, SerializablePaint>> _paths;
-  SerializablePaint currentPaint;
+  SerializablePaint _drawPaint;
   SerializablePaint _backgroundPaint;
   bool _inDrag;
 
@@ -112,7 +117,7 @@ class PathHistory {
         _inDrag = false,
         _backgroundPaint = new SerializablePaint()
           ..blendMode = BlendMode.dstOver,
-        currentPaint = new SerializablePaint()
+        _drawPaint = new SerializablePaint()
           ..color = Colors.black
           ..strokeWidth = 1.0
           ..style = PaintingStyle.fill;
@@ -138,8 +143,8 @@ class PathHistory {
       _inDrag = true;
       final path = new SerializablePath();
       path.moveTo(startPoint.dx, startPoint.dy);
-      _paths.add(new MapEntry<SerializablePath, SerializablePaint>(
-          path, currentPaint));
+      _paths.add(
+          new MapEntry<SerializablePath, SerializablePaint>(path, _drawPaint));
     }
   }
 
@@ -167,20 +172,22 @@ class PathHistory {
 
   Map<String, dynamic> toMap() {
     return {
-      '_paths': _paths.map<Map<String, dynamic>>(
-        (e) => {
-          'key': e.key.toJson(),
-          'value': e.value.toJson(),
-        },
-      ).toList(),
+      '_paths': _paths
+          .map<Map<String, dynamic>>(
+            (e) => {
+              'key': e.key.toJson(),
+              'value': e.value.toJson(),
+            },
+          )
+          .toList(),
     };
   }
 
   factory PathHistory.fromMap(Map<String, dynamic> map) {
     final paths = (map['_paths'] as Iterable).map(
       (e) => new MapEntry(
-        SerializablePath.fromMap(e['key']),
-        SerializablePaint.fromMap(e['value']),
+        SerializablePath.fromMap(json.decode(e['key'])),
+        SerializablePaint.fromMap(json.decode(e['value'])),
       ),
     );
     return PathHistory().._paths.addAll(paths);
@@ -291,7 +298,7 @@ class PainterController extends ChangeNotifier {
     }
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = thickness;
-    _pathHistory.currentPaint = paint;
+    _pathHistory._drawPaint = paint;
     _pathHistory.setBackgroundColor(backgroundColor);
     notifyListeners();
   }
@@ -364,4 +371,13 @@ class PainterController extends ChangeNotifier {
 
   /// Returns serialized json of _pathHistory
   String getPathHistoryJson() => _pathHistory.toJson();
+
+  void loadPathHistory(Map<String, dynamic> pathHistoryMap) {
+    // Set new pathHistory
+    _pathHistory = PathHistory.fromMap(pathHistoryMap);
+    
+    // Call this to set _drawPaint and _backgroundPaint data from this controller 
+    // for the new _pathHistory
+    _updatePaint();
+  }
 }
