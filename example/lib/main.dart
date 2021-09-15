@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:example/painter/components/painting_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
-import 'painter/painter.dart';
+import 'painter/components/painting_screenshot.dart';
+import 'painter/painter_widget.dart';
 
 void main() => runApp(new MyApp());
 
@@ -77,7 +79,7 @@ class _ExamplePageState extends State<ExamplePage> {
         new IconButton(
           icon: new Icon(Icons.check),
           onPressed: () {
-            painting = _controller.getPathHistoryMap();
+            painting = _controller.getPaintingMap();
             _show(_controller.finish(), context);
           },
         ),
@@ -85,7 +87,7 @@ class _ExamplePageState extends State<ExamplePage> {
           new IconButton(
             icon: new Icon(Icons.swap_horiz),
             onPressed: () {
-              _controller.loadPathHistory(painting!);
+              _controller.loadPainting(painting!);
             },
           )
       ];
@@ -100,11 +102,11 @@ class _ExamplePageState extends State<ExamplePage> {
           )),
       body: new Center(
           child: new AspectRatio(
-              aspectRatio: 1.0, child: new Painter(_controller))),
+              aspectRatio: 1.0, child: new PainterWidget(_controller))),
     );
   }
 
-  void _show(PictureDetails picture, BuildContext context) {
+  void _show(PaintingScreenshot picture, BuildContext context) {
     setState(() {
       _finished = true;
     });
