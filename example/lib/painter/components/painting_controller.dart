@@ -150,11 +150,6 @@ class PainterController extends ChangeNotifier {
   String getPaintingJson() => _painter.painting.toJson();
 
   void loadPainting(Map<String, dynamic> paintingMap) {
-    // Set new painting
     _painter.painting = Painting.fromMap(paintingMap);
-
-    // Call this to set drawPaint and _backgroundPaint data from this controller
-    // for the new _pathHistory
-    _updatePaint();
   }
 }

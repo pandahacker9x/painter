@@ -10,15 +10,15 @@ class Painter extends CustomPainter {
   Painting painting;
 
   SerializablePaint drawPaint;
+  
+  SerializablePaint get backgroundPaint => painting.backgroundPaint;
+  set backgroundPaint(SerializablePaint bgPaint) => painting.backgroundPaint = bgPaint;
 
-  SerializablePaint backgroundPaint;
   bool _inDrag;
 
   Painter(Painting? painting, {Listenable? repaint})
       : this.painting = painting ?? Painting(),
         _inDrag = false,
-        backgroundPaint = new SerializablePaint()
-          ..blendMode = BlendMode.dstOver,
         drawPaint = new SerializablePaint()
           ..color = Colors.black
           ..strokeWidth = 1.0

@@ -1,11 +1,17 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'painting_path.dart';
+import 'serilizable_paint.dart';
 
 class Painting {
   List<PaintingPath> paths;
+  SerializablePaint backgroundPaint;
 
-  Painting() : paths = <PaintingPath>[];
+  Painting()
+      : paths = <PaintingPath>[],
+        backgroundPaint = new SerializablePaint()
+          ..blendMode = BlendMode.dstOver;
 
   Map<String, dynamic> toMap() {
     return {
@@ -14,6 +20,7 @@ class Painting {
             (e) => e.toMap(),
           )
           .toList(),
+      'backgroundPaint': backgroundPaint.toMap(),
     };
   }
 
@@ -21,7 +28,9 @@ class Painting {
     final paths = (map['paths'] as Iterable).map(
       (e) => PaintingPath.fromMap(e),
     );
-    return Painting()..paths.addAll(paths);
+    return Painting()
+      ..paths.addAll(paths)
+      ..backgroundPaint = SerializablePaint.fromMap(map["backgroundPaint"]);
   }
 
   String toJson() => json.encode(toMap());
